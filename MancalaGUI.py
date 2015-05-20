@@ -6,6 +6,7 @@
 from Tkinter import *
 from MancalaBoard import *
 from Player import *
+from MTCS_player import *
 
 class MancalaWindow:
 
