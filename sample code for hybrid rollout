@@ -1,3 +1,8 @@
+#Written by Thanh
+#This code is just sample. It is not working for sure. I wrote this to let you see if I am
+#in the right direction or not. Please let me know where to improve.
+ 
+ 
  #Simulate game by all moves on this level and untile timer end
         
          # while state is non-terminal do minimax 2 plies
