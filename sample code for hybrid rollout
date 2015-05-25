@@ -1,0 +1,90 @@
+ #Simulate game by all moves on this level and untile timer end
+        
+         # while state is non-terminal do minimax 2 plies
+        results, move = hybridRollout(self, board, 2)
+         #still non-terminal and timer not end, do random moves
+
+        #Backpropagate is in hybridRollout()
+        
+        
+        #Select the best child to doMove
+
+        return -1
+
+    def randomSimulation(self,move, board):
+        r = -INFINITY
+        m = move
+        if not board.gameOver():
+            nb = deepcopy(board)
+            nb.makeMove(self,random.choice(board.legalMoves(self)))
+            opp = Player (self.opp, self.type)
+            r, m = opp.randomSimulation(nb)
+        return r, m
+    
+    def hybridRollout(self, board, ply):
+        turn = self
+        results = -INFINITY
+        move = -1 #is it -1?
+        for m in board.legalMoves(self):
+            if ply == 0: 
+                #call random simulation
+                return randomSimulation(m, board)
+            if board.gameOver(): #returns what ever we have
+                return results, move #or -1 -1? 
+
+            nb = deepcopy(board)
+            nb.makeMove(self,m)
+            opp = Player(self.opp, self.type, self.ply)
+            r, m = opp.minValue(nb, ply-1, turn)
+            if r > 1:
+                move = m
+                results = r
+            return results, move
+        
+     def maxValue( self, board, ply, turn):
+        """ Find the minimax value for the next move for this player
+            at a given board configuation
+            Returns (score, oppMove)"""
+        
+        results = -INFINITY #what should I put here?
+        move = -1
+        for m in board.legalMoves( self ):
+           if ply == 0: 
+                #call random simulation
+                return randomSimulation(self, board)
+            if board.gameOver(): #returns what ever we have
+                return results, move #or -1 -1? 
+                
+            opponent = Player(self.opp, self.type, self.ply)
+            nb = deepcopy(board)
+            nb.makeMove(self,m)
+            opp = Player(self.opp, self.type, self.ply)
+            r, m = opp.minValue(nb, ply-1, turn)
+            if r > 1:
+                move = m
+                results = r
+        return results, move
+
+    def minValue( self, board, ply, turn ):
+        """ Find the minimax value for the next move for this player
+            at a given board configuation"""
+        
+        score = INFINITY
+        move = -1
+        for m in board.legalMoves( self ):
+            if ply == 0: 
+                #call random simulation
+                return randomSimulation(self, board)
+            if board.gameOver(): #returns what ever we have
+                return results, move #or -1 -1? 
+                
+            # make a new player to play the other side
+            opponent = Player(self.opp, self.type, self.ply)
+            # Copy the board so that we don't ruin it
+            nextBoard = deepcopy(board)
+            nextBoard.makeMove( self, m )
+             r, m = opp.maxValue(nb, ply-1, turn)
+            if r < 1:
+                move = m
+                results = r
+        return results, move
