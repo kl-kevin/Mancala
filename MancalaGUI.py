@@ -7,6 +7,7 @@ from Tkinter import *
 from MancalaBoard import *
 from Player import *
 from MTCS_player import *
+#from HarrisonPlayer import *
 
 class MancalaWindow:
 
@@ -204,11 +205,11 @@ def startGame(p1, p2):
     app = MancalaWindow(root, p1, p2)
 
     root.mainloop()
-	
+
 def main():
-	p1 = Player(1,0)
-	p2 = MancalaGuru(2,2,5)
-	
+	p1 = Player(2,2,5)
+	p2 = Player(2,2,6)
+	print "start game"
 	startGame(p1, p2)
 
-main()
+#main()
