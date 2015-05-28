@@ -47,7 +47,7 @@ class MTCSPlayer(Player):
 
 
         #print random.__file__
-        m = UCT(rootboard = board, itermax = 2000, player = self, ply = self.ply, verbose = True)
+        m = UCT(rootboard = board, itermax = 20000, player = self, ply = self.ply, verbose = True)
         
         stop = timeit.default_timer()
         
@@ -71,7 +71,7 @@ def winlose(rootplayer, board):
 
     #opp Mancala
     s2 = board.scoreCups[rootplayer.opp-1]
-    return (s1 - s2) / 48.0
+    return ((s1 - s2) / 48.0 + sqrt(s1)/sqrt(48.0)) /2
 
 def score(rootplayer, board):
     """ Evaluate the Mancala board for this player """
@@ -88,9 +88,9 @@ def score(rootplayer, board):
     s1 =0.0
     s2 =0.0
     for i in range(len(Cups)):
-        s1 = s1 + Cups[i]*1.0
+        s1 = s1 + Cups[i]*1.2
 
-    s1 = s1+board.scoreCups[rootplayer.num-1]*5.5
+    s1 = s1+board.scoreCups[rootplayer.num-1]*2.5
     if board.scoreCups[rootplayer.num-1] >24:
         return 1
     #opp cups
@@ -99,12 +99,13 @@ def score(rootplayer, board):
 
                             
     #opp Mancala
-    s2 = s2+board.scoreCups[rootplayer.opp-1]*5.5
+    s2 = s2+board.scoreCups[rootplayer.opp-1]*2.2
     if board.scoreCups[rootplayer.opp-1] >24:
         return -1
     
     value = s1 - s2
-    return (value)/(48*5.5)
+    return (value / 48.0*2.5 + sqrt(s1)/sqrt(24.0)) /2
+
 def CatchMove(playerNum, board, move):
     if playerNum == 1:
         Cups = board.P1Cups
@@ -241,13 +242,14 @@ def UCT(rootboard, itermax, player, ply ,verbose = False):
                     return c.move
                 #find a bourns move explor for more again moves
                 if c.again == True:
-                    s, m = rootplayer.alphaBetaMove(rootboard,2)
-                    print "Again c.Move="+str(c.move)+" MiniMax ply=2 Move="+str(m)
+                    s, m = rootplayer.alphaBetaMove(rootboard,3)
+                    print "Again c.Move="+str(c.move)+" MiniMax ply=3 Move="+str(m)
                     return m
                 #find a catch or be catched
                 ca, cm = CatchMove(rootplayer.num,rootboard,c.move)
                 if ca:
                     return c.move
+                #void opp's catch
                 ca, cm = CatchMove(rootplayer.opp,rootboard,c.move)
                 if ca:
                     return cm
@@ -271,7 +273,6 @@ def UCT(rootboard, itermax, player, ply ,verbose = False):
             else :
                 nodeplayer = Player(node.player.opp, node.player.type, node.player.ply)
             #print "Expand AddChild Player:"+str(nodeplayer.num)+" Move:"+str(m)
-            rvalue = INFINITY
             evalue = score(rootplayer,board)
             rvalue = winlose(rootplayer,board)
             node = node.AddChild(m,board,nodeplayer,evalue,rvalue,again) # add child and descend tree
@@ -323,7 +324,7 @@ def UCT(rootboard, itermax, player, ply ,verbose = False):
                         hasavarge = True
                         rvalue +=c.rvalue
 
-                if haswin and not haslose:
+                if haswin:
                     node.rvalue = INFINITY
                 elif haslose and not haswin and not hasavarge :
                     node.rvalue = -INFINITY
@@ -351,6 +352,8 @@ def UCT(rootboard, itermax, player, ply ,verbose = False):
     '''MCST UCB1 most visited
     '''
     return sorted(rootnode.childNodes, key = lambda c: c.visits)[-1].move # return the move that was most visited
+
+    #return sorted(self.childNodes, key = lambda c: (1-c.alpha)*(c.wins/c.visits)+ c.alpha*c.evalue)[-1].move#
 
 
 
